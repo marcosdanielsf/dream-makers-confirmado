@@ -1,0 +1,62 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 40 50% 97%;
+    --foreground: 0 0% 10%;
+    --card: 40 50% 97%;
+    --card-foreground: 0 0% 10%;
+    --popover: 40 50% 97%;
+    --popover-foreground: 0 0% 10%;
+    --primary: 39 50% 59%;
+    --primary-foreground: 0 0% 10%;
+    --secondary: 40 20% 94%;
+    --secondary-foreground: 0 0% 10%;
+    --muted: 40 20% 92%;
+    --muted-foreground: 0 0% 45%;
+    --accent: 39 50% 59%;
+    --accent-foreground: 0 0% 10%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 40 20% 88%;
+    --input: 40 20% 88%;
+    --ring: 39 50% 59%;
+    --radius: 0.5rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply antialiased;
+    font-family: var(--font-inter), sans-serif;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  @keyframes accordion-down {
+    from { height: 0 }
+    to { height: var(--radix-accordion-content-height) }
+  }
+  @keyframes accordion-up {
+    from { height: var(--radix-accordion-content-height) }
+    to { height: 0 }
+  }
+  .animate-accordion-down {
+    animation: accordion-down 0.2s ease-out;
+  }
+  .animate-accordion-up {
+    animation: accordion-up 0.2s ease-out;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
