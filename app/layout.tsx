@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { Inter, Playfair_Display, DM_Serif_Display } from "next/font/google"
 import "./globals.css"
 import { Toaster } from "@/components/ui/toaster"
+import ClarityScript from "@/components/clarity-script"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -42,6 +43,7 @@ export default function RootLayout({
       <body className="font-[var(--font-inter)] antialiased bg-[#1A1A1A] text-white">
         {children}
         <Toaster />
+        <ClarityScript />
       </body>
     </html>
   )
