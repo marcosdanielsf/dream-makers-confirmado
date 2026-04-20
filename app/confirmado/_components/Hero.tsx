@@ -1,11 +1,25 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { useSearchParams } from "next/navigation"
 import { ChevronDown } from "lucide-react"
+import { parseCallDate, formatCallDatePtBR } from "@/lib/countdown"
 
 export function Hero() {
   const searchParams = useSearchParams()
   const nome = searchParams.get("n")
+  const rawDate = searchParams.get("d")
+
+  const [dateLabel, setDateLabel] = useState<string | null>(null)
+
+  useEffect(() => {
+    const parsed = parseCallDate(rawDate)
+    if (parsed) {
+      setDateLabel(formatCallDatePtBR(parsed))
+    } else {
+      setDateLabel(null)
+    }
+  }, [rawDate])
 
   const handleScroll = () => {
     const el = document.getElementById("levar")
@@ -20,7 +34,7 @@ export function Hero() {
         muted
         loop
         playsInline
-        className="absolute inset-0 w-full h-full object-cover opacity-30"
+        className="absolute inset-0 w-full h-full object-cover opacity-50"
         src="/videos/marina-confirmacao.mp4"
         aria-hidden="true"
       />
@@ -55,10 +69,16 @@ export function Hero() {
           )}
         </h1>
 
-        {/* Subtitle */}
+        {/* Subtitle — dinamico via ?d= ou fallback neutro */}
         <p className="text-xl sm:text-2xl text-white/70 font-light mb-12 max-w-2xl mx-auto">
-          Quinta, <span className="text-[#C9A961] font-medium">20h EDT.</span>{" "}
-          Sua vida financeira muda aqui.
+          {dateLabel ? (
+            <>
+              <span className="text-[#C9A961] font-medium">{dateLabel}.</span>{" "}
+              Sua vida financeira muda aqui.
+            </>
+          ) : (
+            <>Sua vida financeira muda aqui.</>
+          )}
         </p>
 
         {/* CTA */}
