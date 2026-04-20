@@ -14,6 +14,7 @@ interface Depoimento {
   headline: string
   videoSrc: string
   color: string
+  hasVideo?: boolean
 }
 
 const depoimentos: Depoimento[] = [
@@ -30,39 +31,74 @@ const depoimentos: Depoimento[] = [
     color: "#1F3A2C",
   },
   {
-    nome: "Claudia Fehribach",
-    headline: "46 anos, ex-limpadora → $200k+ hoje",
+    nome: "Cláudia Fehribach",
+    headline: "20+ famílias já receberam o benefício em vida",
     videoSrc: "/videos/depoimento-claudia.mp4",
     color: "#8a6b2a",
+    hasVideo: true,
   },
 ]
 
 function DepoimentoCard({ dep, onOpen }: { dep: Depoimento; onOpen: () => void }) {
+  const isClickable = dep.hasVideo === true
   return (
     <div className="flex flex-col gap-4">
       {/* Thumbnail 9:16 */}
       <button
-        onClick={onOpen}
-        className="relative w-full rounded-2xl overflow-hidden group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C9A961]"
+        onClick={isClickable ? onOpen : undefined}
+        disabled={!isClickable}
+        className={`relative w-full rounded-2xl overflow-hidden group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C9A961] ${
+          isClickable ? "cursor-pointer" : "cursor-default"
+        }`}
         style={{ paddingBottom: "177.78%" }}
-        aria-label={`Ver depoimento de ${dep.nome}`}
+        aria-label={isClickable ? `Ver depoimento de ${dep.nome}` : `${dep.nome} — em breve`}
       >
-        {/* Solid color placeholder */}
-        <div
-          className="absolute inset-0 flex items-end p-4"
-          style={{ backgroundColor: dep.color }}
-        >
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-          {/* Play button */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-16 h-16 rounded-full bg-white/20 group-hover:bg-white/30 backdrop-blur-sm flex items-center justify-center transition-all group-hover:scale-110">
-              <Play className="w-7 h-7 text-white ml-1" fill="white" />
+        {isClickable ? (
+          <>
+            {/* Real video preview */}
+            <video
+              src={dep.videoSrc}
+              autoPlay
+              loop
+              muted
+              playsInline
+              preload="metadata"
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/10 to-black/40" />
+            {/* "Real" badge */}
+            <div className="absolute top-3 left-3 bg-[#C9A961] text-[#1A1A1A] text-[9px] font-bold tracking-wider uppercase px-2 py-0.5 rounded-full">
+              Depoimento real
+            </div>
+            <div className="absolute inset-0 flex items-center justify-center opacity-80 group-hover:opacity-100 transition-opacity">
+              <div className="w-14 h-14 rounded-full bg-[#C9A961]/95 flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform">
+                <Play className="w-6 h-6 text-[#1A1A1A] ml-0.5" fill="#1A1A1A" />
+              </div>
+            </div>
+            <div className="absolute bottom-0 left-0 right-0 p-3 z-10">
+              <p className="text-white font-bold text-sm">{dep.nome}</p>
+            </div>
+          </>
+        ) : (
+          /* Solid color placeholder for missing videos */
+          <div
+            className="absolute inset-0 flex items-end p-4"
+            style={{ backgroundColor: dep.color }}
+          >
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+            <div className="absolute top-3 left-3 bg-white/20 backdrop-blur-sm text-white text-[9px] font-bold tracking-wider uppercase px-2 py-0.5 rounded-full">
+              Em breve
+            </div>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center">
+                <Play className="w-7 h-7 text-white/50 ml-1" fill="white" fillOpacity={0.3} />
+              </div>
+            </div>
+            <div className="relative z-10">
+              <p className="text-white font-bold text-base">{dep.nome}</p>
             </div>
           </div>
-          <div className="relative z-10">
-            <p className="text-white font-bold text-base">{dep.nome}</p>
-          </div>
-        </div>
+        )}
       </button>
 
       {/* Text below */}

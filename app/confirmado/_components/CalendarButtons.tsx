@@ -1,7 +1,9 @@
 "use client"
 
+import { useMemo } from "react"
+import { useSearchParams } from "next/navigation"
 import { CalendarDays, Apple, Building2 } from "lucide-react"
-import { getNextThursdayAt8pmEDT } from "@/lib/countdown"
+import { getNextThursdayAt8pmEDT, parseCallDate } from "@/lib/countdown"
 import { downloadICS, getGoogleCalendarUrl, getOutlookCalendarUrl } from "@/lib/ics"
 
 const EVENT_TITLE = "Call de Grupo Dream Makers — Sua carreira como agente financeiro"
@@ -9,7 +11,12 @@ const EVENT_DESCRIPTION =
   "Participe da call ao vivo com Marina Couto e o time Dream Makers Financial. Link Zoom será enviado por WhatsApp. Chegue na hora — começa pontual."
 
 export function CalendarButtons() {
-  const target = getNextThursdayAt8pmEDT()
+  const searchParams = useSearchParams()
+
+  const target = useMemo(() => {
+    const rawDate = searchParams.get("d")
+    return parseCallDate(rawDate) ?? getNextThursdayAt8pmEDT()
+  }, [searchParams])
 
   const event = {
     title: EVENT_TITLE,
