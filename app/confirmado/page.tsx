@@ -6,13 +6,16 @@ import { CalendarButtons } from "./_components/CalendarButtons"
 import { TarefaAtivacao } from "./_components/TarefaAtivacao"
 import { TragaParceiro } from "./_components/TragaParceiro"
 import { Depoimentos } from "./_components/Depoimentos"
-import { Teaser401k } from "./_components/Teaser401k"
+import { MarinaEmMovimento } from "./_components/MarinaEmMovimento"
+import { PodcastBrazillionaires } from "./_components/PodcastBrazillionaires"
+import { TeaserOrigem } from "./_components/TeaserOrigem"
 import { FAQ } from "./_components/FAQ"
 import { Footer } from "./_components/Footer"
+import { AmbientAudio } from "./_components/AmbientAudio"
 
 export const metadata = {
   title: "Você confirmou | Dream Makers Financial",
-  description: "Quinta, 20h EDT. Sua vida financeira muda aqui.",
+  description: "Sua vida financeira muda aqui.",
 }
 
 export default function ConfirmadoPage() {
@@ -27,14 +30,18 @@ export default function ConfirmadoPage() {
         <Hero />
       </Suspense>
 
-      {/* 2. Countdown */}
-      <Countdown />
+      {/* 2. Countdown — needs Suspense for useSearchParams */}
+      <Suspense fallback={<div className="bg-[#1A1A1A] h-96" />}>
+        <Countdown />
+      </Suspense>
 
       {/* 3. O que você vai levar */}
       <LevarCards />
 
-      {/* 4. Calendário */}
-      <CalendarButtons />
+      {/* 4. Calendário — needs Suspense for useSearchParams */}
+      <Suspense fallback={<div className="bg-[#1F3A2C] h-80" />}>
+        <CalendarButtons />
+      </Suspense>
 
       {/* 5. Tarefa de ativação */}
       <TarefaAtivacao />
@@ -45,14 +52,23 @@ export default function ConfirmadoPage() {
       {/* 7. Depoimentos em vídeo */}
       <Depoimentos />
 
-      {/* 8. Teaser 401k */}
-      <Teaser401k />
+      {/* 7.1 Marina em movimento — reels IG */}
+      <MarinaEmMovimento />
+
+      {/* 8. Teaser origem Brazillionaires (hook de missão) */}
+      <TeaserOrigem />
+
+      {/* 8.1 Podcast Brazillionaires — mergulhe fundo */}
+      <PodcastBrazillionaires />
 
       {/* 9. FAQ */}
       <FAQ />
 
       {/* 10. Footer */}
       <Footer />
+
+      {/* Floating ambient audio player (background music, ducks on video play) */}
+      <AmbientAudio />
     </main>
   )
 }
