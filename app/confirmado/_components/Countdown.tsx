@@ -1,7 +1,14 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { getNextThursdayAt8pmEDT, calcTimeLeft, type TimeLeft } from "@/lib/countdown"
+import { useSearchParams } from "next/navigation"
+import {
+  getNextThursdayAt8pmEDT,
+  calcTimeLeft,
+  parseCallDate,
+  formatCallDatePtBR,
+  type TimeLeft,
+} from "@/lib/countdown"
 
 function CountBox({ value, label }: { value: number; label: string }) {
   return (
@@ -22,24 +29,73 @@ function CountBox({ value, label }: { value: number; label: string }) {
 }
 
 export function Countdown() {
-  const [target] = useState<Date>(() => getNextThursdayAt8pmEDT())
-  const [timeLeft, setTimeLeft] = useState<TimeLeft>(() => calcTimeLeft(getNextThursdayAt8pmEDT()))
+  const searchParams = useSearchParams()
+
+  // Data da call: tenta ler de query param ?d=. Se invalido/ausente → modo "sem data" (nao mente com fallback).
+  const [target, setTarget] = useState<Date | null>(null)
+  const [timeLeft, setTimeLeft] = useState<TimeLeft | null>(null)
+  const [dateLabel, setDateLabel] = useState<string>("")
+  const [hasValidDate, setHasValidDate] = useState<boolean | null>(null)
 
   useEffect(() => {
+    const rawDate = searchParams.get("d")
+    const parsed = parseCallDate(rawDate)
+    if (parsed) {
+      setTarget(parsed)
+      setDateLabel(formatCallDatePtBR(parsed))
+      setTimeLeft(calcTimeLeft(parsed))
+      setHasValidDate(true)
+    } else {
+      setHasValidDate(false)
+    }
+  }, [searchParams])
+
+  useEffect(() => {
+    if (!target) return
     const interval = setInterval(() => {
       setTimeLeft(calcTimeLeft(target))
     }, 1000)
     return () => clearInterval(interval)
   }, [target])
 
+  // Loading inicial (pre-hidratacao)
+  if (hasValidDate === null) {
+    return (
+      <section className="bg-[#1A1A1A] py-20 px-6">
+        <div className="max-w-4xl mx-auto text-center">
+          <p className="text-white/40 text-sm">Carregando...</p>
+        </div>
+      </section>
+    )
+  }
+
+  // Sem data valida no ?d= → nao mente com fallback. Guia o lead pro e-mail.
+  if (!hasValidDate || !target || !timeLeft) {
+    return (
+      <section className="bg-[#1A1A1A] py-20 px-6">
+        <div className="max-w-3xl mx-auto text-center">
+          <p className="text-[#C9A961] text-sm tracking-[0.3em] uppercase font-medium mb-4">
+            Reunião confirmada
+          </p>
+          <h2 className="font-playfair text-2xl sm:text-3xl text-white mb-6">
+            Verifique data e horário no seu e-mail de confirmação.
+          </h2>
+          <p className="text-white/50 text-sm max-w-lg mx-auto">
+            Você também pode conferir no WhatsApp ou na confirmação automática enviada pelo nosso time.
+          </p>
+        </div>
+      </section>
+    )
+  }
+
   return (
     <section className="bg-[#1A1A1A] py-20 px-6">
       <div className="max-w-4xl mx-auto text-center">
         <p className="text-[#C9A961] text-sm tracking-[0.3em] uppercase font-medium mb-4">
-          A call começa em
+          Sua call começa em
         </p>
         <h2 className="font-playfair text-2xl sm:text-3xl text-white mb-12">
-          Quinta-feira · 20h EDT (horário de Nova York)
+          {dateLabel}
         </h2>
 
         {timeLeft.isOver ? (
@@ -61,7 +117,7 @@ export function Countdown() {
         )}
 
         <p className="text-white/40 text-sm mt-10 max-w-md mx-auto">
-          Bloqueie essa quinta na sua agenda agora. Você vai entender por quê vale cada minuto.
+          Bloqueie essa data na sua agenda agora. Você vai entender por quê vale cada minuto.
         </p>
       </div>
     </section>
